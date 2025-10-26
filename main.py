@@ -149,7 +149,7 @@ class LotteryBot:
             logger.error(f"Error formatting message: {e}")
             # Fallback message if data structure is different
             return f"""
-<b>♦️ LUCKWIN MD5 - PHÂN TÍCH CHUẨN XÁC ♦️</b>
+<b>♦️ B52 MD5 - PHÂN TÍCH CHUẨN XÁC ♦️</b>
 ══════════════════════════
 <b>🆔 Phiên:</b> {data.get('round_id', 'N/A')}
 <b>🎲 Xúc xắc:</b> {data.get('dice', 'N/A')}
