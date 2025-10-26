@@ -113,16 +113,16 @@ class LotteryBot:
         """Định dạng tin nhắn từ dữ liệu API với chữ đậm"""
         try:
             # Extract data from API response
-            phien = data.get('current_round', {}).get('round_id', 'N/A')
-            xuc_xac = data.get('current_round', {}).get('dice_result', 'N/A')
-            tong = data.get('current_round', {}).get('total', 'N/A')
-            ket_qua = data.get('current_round', {}).get('result', 'N/A')
-            
-            # Prediction data
-            phien_tiep_theo = data.get('prediction', {}).get('next_round_id', 'N/A')
-            du_doan = data.get('prediction', {}).get('prediction', 'N/A')
-            do_tin_cay = data.get('prediction', {}).get('confidence', 'N/A')
-            
+            phien = data.get('phien', 'N/A')
+            xuc_xac = data.get('xuc_xac', 'N/A')
+            tong = data.get('tong', 'N/A')
+            ket_qua = data.get('ket_qua', 'N/A')
+
+# Prediction data
+            phien_tiep_theo = data.get('phien_tiep_theo', 'N/A')
+            du_doan = data.get('du_doan', 'N/A')
+            do_tin_cay = data.get('do_tin_cay', 'N/A')
+
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
             # Format message with bold text using HTML
