@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 
 # Thông tin bot
 BOT_TOKEN = os.environ.get('8318094060:AAGXPli-P7R2Fu4GvGwEi3NrpXaR9AlgbFM')
-API_URL = "https://b52-chaoconnha-bobinn.onrender.com/api/taixiumd5"
+API_URL = "https://b52-chaoconnha-bobinn.onrender.com/api/taixiu"
 ADMIN_INFO = {
-    "name": "Admin LuckWin",
-    "contact": "@luckwin_admin",
-    "website": "https://luckwin.com"
+    "name": "Admin : VĂN NHẬT ( BINN )",
+    "contact": "@VanNhatBanTool",
+    "website": "chưa update"
 }
 
 # Biến toàn cục
@@ -47,7 +47,7 @@ class LotteryBot:
         user = update.effective_user
         
         welcome_text = f"""
-<b>👋 Chào mừng {user.first_name} đến với LUCKWIN MD5!</b>
+<b>👋 Chào mừng {user.first_name} đến với B52 !</b>
 
 🤖 <b>Đây là bot phân tích xúc xắc chính xác cao</b>
 💎 <b>Sử dụng AI để dự đoán kết quả xúc xắc</b>
@@ -129,7 +129,7 @@ class LotteryBot:
             
             # Format message with bold text using HTML
             message = f"""
-<b>♦️ LUCKWIN MD5 - PHÂN TÍCH CHUẨN XÁC ♦️</b>
+<b>♦️ B52 BÀN THƯỜNG - PHÂN TÍCH CHUẨN XÁC ♦️</b>
 ══════════════════════════
 <b>🆔 Phiên:</b> {phien}
 <b>🎲 Xúc xắc:</b> {d1} + {d2} + {d3}
