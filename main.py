@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # Thông tin bot
 BOT_TOKEN = os.environ.get('8318094060:AAGXPli-P7R2Fu4GvGwEi3NrpXaR9AlgbFM')
-API_URL = "https://api-luck8-binn-chat-gpt.onrender.com/lottery"
+API_URL = "https://b52-chaoconnha-bobinn.onrender.com/api/taixiumd5"
 ADMIN_INFO = {
     "name": "Admin LuckWin",
     "contact": "@luckwin_admin",
@@ -113,15 +113,17 @@ class LotteryBot:
         """Định dạng tin nhắn từ dữ liệu API với chữ đậm"""
         try:
             # Extract data from API response
-            phien = data.get('phien', 'N/A')
-            xuc_xac = data.get('xuc_xac', 'N/A')
-            tong = data.get('tong', 'N/A')
-            ket_qua = data.get('ket_qua', 'N/A')
+            phien = data.get('Phien', 'N/A')
+            d1 = data.get('Xuc_xac_1', 'N/A')
+            d2 = data.get('Xuc_xac_2', 'N/A')
+            d3 = data.get('Xuc_xac_3', 'N/A')
+            tong = data.get('Tong', 'N/A')
+            ket_qua = data.get('Ket_qua', 'N/A')
 
 # Prediction data
-            phien_tiep_theo = data.get('phien_tiep_theo', 'N/A')
-            du_doan = data.get('du_doan', 'N/A')
-            do_tin_cay = data.get('do_tin_cay', 'N/A')
+            phien_tiep_theo = data.get('Phien_tiep_theo', 'N/A')
+            du_doan = data.get('Du_doan', 'N/A')
+            do_tin_cay = data.get('Do_tin_cay', 'N/A')
 
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             
@@ -130,7 +132,7 @@ class LotteryBot:
 <b>♦️ LUCKWIN MD5 - PHÂN TÍCH CHUẨN XÁC ♦️</b>
 ══════════════════════════
 <b>🆔 Phiên:</b> {phien}
-<b>🎲 Xúc xắc:</b> {xuc_xac}
+<b>🎲 Xúc xắc:</b> {d1} + {d2} + {d3}
 <b>🧮 Tổng điểm:</b> {tong} | <b>Kết quả:</b> 💰 {ket_qua}
 ──────────────────────────
 <b>🔮 Dự đoán phiên {phien_tiep_theo}:</b> 🀄️ {du_doan}
