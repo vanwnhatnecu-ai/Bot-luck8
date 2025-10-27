@@ -8,6 +8,18 @@ from telegram.constants import ParseMode
 import logging
 from datetime import datetime
 import time
+from flask import Flask
+import threading
+
+# Thiết lập Flask server để giữ Replit hoạt động
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "🤖 Bot Telegram B52 đang chạy!"
+
+def run_flask():
+    app.run(host='0.0.0.0', port=8080)
 
 # Thiết lập logging
 logging.basicConfig(
@@ -16,8 +28,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Thông tin bot
-BOT_TOKEN = os.environ.get('8318094060:AAGXPli-P7R2Fu4GvGwEi3NrpXaR9AlgbFM')
+# Thông tin bot - SỬA LẠI ĐÂY: sử dụng biến môi trường đúng cách
+BOT_TOKEN = os.environ.get('BOT_TOKEN', '8318094060:AAGXPli-P7R2Fu4GvGwEi3NrpXaR9AlgbFM')
 API_URL = "https://b52-chaoconnha-bobinn.onrender.com/api/taixiu"
 ADMIN_INFO = {
     "name": "Admin : VĂN NHẬT ( BINN )",
@@ -40,6 +52,8 @@ class LotteryBot:
         """Thiết lập các command handler"""
         self.application.add_handler(CommandHandler("start", self.start_command))
         self.application.add_handler(CommandHandler("chaybot", self.activate_bot))
+        self.application.add_handler(CommandHandler("stop", self.stop_bot))
+        self.application.add_handler(CommandHandler("status", self.status_command))
         
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Xử lý lệnh /start"""
@@ -55,6 +69,8 @@ class LotteryBot:
 <b>📋 Các lệnh có sẵn:</b>
 /start - Hiển thị thông tin này
 /chaybot - Kích hoạt bot phân tích
+/stop - Dừng bot phân tích
+/status - Kiểm tra trạng thái bot
 
 <b>👤 Thông tin Admin:</b>
 • Tên: {ADMIN_INFO['name']}
@@ -80,7 +96,8 @@ class LotteryBot:
             await update.message.reply_text(
                 "🚀 <b>Bot đã được kích hoạt!</b>\n\n"
                 "🤖 <b>Bắt đầu phân tích dữ liệu tự động...</b>\n"
-                "📊 <b>Bot sẽ gửi thông báo ngay khi có dữ liệu mới</b>", 
+                "📊 <b>Bot sẽ gửi thông báo ngay khi có dữ liệu mới</b>\n"
+                "⏰ <b>Bot sẽ chạy 24/7 trên Replit</b>", 
                 parse_mode=ParseMode.HTML
             )
         else:
@@ -88,12 +105,42 @@ class LotteryBot:
                 "🚀 <b>Bot đã được kích hoạt trong nhóm!</b>\n\n"
                 "🤖 <b>Bắt đầu phân tích dữ liệu tự động...</b>\n"
                 "📊 <b>Bot sẽ gửi thông báo ngay khi có dữ liệu mới</b>\n"
-                "👥 <b>Tất cả thành viên đều có thể xem phân tích</b>", 
+                "👥 <b>Tất cả thành viên đều có thể xem phân tích</b>\n"
+                "⏰ <b>Bot sẽ chạy 24/7 trên Replit</b>", 
                 parse_mode=ParseMode.HTML
             )
         
         logger.info(f"Bot activated in chat: {chat_id} (type: {chat_type})")
         
+    async def stop_bot(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Xử lý lệnh /stop"""
+        chat_id = update.effective_chat.id
+        
+        if chat_id in active_chats:
+            active_chats.remove(chat_id)
+            await update.message.reply_text("🛑 <b>Bot đã dừng phân tích!</b>", parse_mode=ParseMode.HTML)
+        else:
+            await update.message.reply_text("❌ <b>Bot chưa được kích hoạt trong chat này!</b>", parse_mode=ParseMode.HTML)
+            
+    async def status_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Xử lý lệnh /status"""
+        chat_id = update.effective_chat.id
+        status = "🟢 Đang chạy" if chat_id in active_chats else "🔴 Đã dừng"
+        
+        status_text = f"""
+<b>📊 Trạng thái hệ thống:</b>
+
+• <b>Trạng thái bot:</b> {status}
+• <b>Tổng số chat đang active:</b> {len(active_chats)}
+• <b>Lần cập nhật cuối:</b> {datetime.fromtimestamp(last_update_time).strftime('%H:%M:%S %d/%m/%Y') if last_update_time else 'Chưa có'}
+
+<b>⚙️ Thông tin server:</b>
+• <b>Platform:</b> Replit
+• <b>Uptime:</b> 24/7
+• <b>Phiên bản:</b> 1.0
+        """
+        await update.message.reply_text(status_text, parse_mode=ParseMode.HTML)
+    
     async def fetch_data(self):
         """Lấy dữ liệu từ API"""
         try:
@@ -120,7 +167,7 @@ class LotteryBot:
             tong = data.get('Tong', 'N/A')
             ket_qua = data.get('Ket_qua', 'N/A')
 
-# Prediction data
+            # Prediction data
             phien_tiep_theo = data.get('Phien_tiep_theo', 'N/A')
             du_doan = data.get('Du_doan', 'N/A')
             do_tin_cay = data.get('Do_tin_cay', 'N/A')
@@ -219,7 +266,9 @@ class LotteryBot:
                 if active_chats:  # Chỉ kiểm tra nếu có chat active
                     await self.check_and_broadcast_updates()
                 else:
-                    logger.info("No active chats, skipping check")
+                    # Log mỗi 5 phút khi không có active chats để biết bot vẫn chạy
+                    if int(time.time()) % 300 == 0:
+                        logger.info("Bot is running but no active chats")
                 
                 # Kiểm tra mỗi 10 giây để đảm bảo cập nhật nhanh
                 await asyncio.sleep(10)
@@ -240,6 +289,11 @@ class LotteryBot:
 
 def main():
     """Hàm chính"""
+    # Khởi chạy Flask server trong thread riêng
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+    
     if not BOT_TOKEN:
         logger.error("BOT_TOKEN not found in environment variables!")
         print("❌ Vui lòng thiết lập BOT_TOKEN trong Environment Variables!")
